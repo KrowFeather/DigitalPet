@@ -1,3 +1,4 @@
+import java.util.Random;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -8,6 +9,9 @@ public class GameSystem {
     public void initial(){
         Scanner sc = new Scanner(System.in);
         System.out.println("-----------电子宠物-----------");
+        System.out.println("What's your name?");
+        master.name=sc.next();
+        System.out.println(Util.line);
         System.out.println("Choose your pet:");
         System.out.println("1. cat");
         System.out.println("2. dog");
@@ -76,6 +80,16 @@ public class GameSystem {
         };
         Timer timer1 = new Timer();
         timer1.scheduleAtFixedRate(timerTask1,0L,1000L*45L);
+
+        Timer timer2 = new Timer();
+        timer2.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if(!pet.isIll) {
+                    pet.fallIll();
+                }
+            }
+        },1000L*10L,(new Random().nextInt(10)+1)*120L*1000L);
     }
 
     private void startGame() {

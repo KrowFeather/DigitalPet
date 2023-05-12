@@ -1,9 +1,14 @@
+import java.util.Timer;
+import java.util.TimerTask;
+
 public abstract class Pet{
     public String name;
     public int health;
     public int hungry;
     public int love;
+    public boolean isIll;
     public String strain;
+    private Timer timer = new Timer();
     public Pet(){
         this.health=100;
         this.love=60;
@@ -12,6 +17,19 @@ public abstract class Pet{
     }
     public void reduceHunger(){
         this.hungry--;
+    }
+
+    public void fallIll(){
+        isIll=true;
+        System.out.println();
+        System.out.println("Your pet is ill,take it to the hospital");
+        System.out.println();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                reduceHealth();
+            }
+        },0L,1000L*5L);
     }
 
     public void showStatus() {

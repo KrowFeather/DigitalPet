@@ -3,6 +3,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 @SuppressWarnings("Duplicates")
 public class Master {
+    public String name;
     public boolean isWorking;
     public boolean isRelaxing;
     public long salary;
@@ -52,12 +53,21 @@ public class Master {
 
     public void toHospital(Pet pet){
         System.out.println(Util.line);
-        if(pet.health<100){
+        if(pet.health<100&&this.salary>=50){
             pet.health+=100-pet.health;
             this.salary-=50;
+            pet.isIll=false;
+            System.out.println("You have saved it! great");
+            System.out.println(pet.name+"的生命值为:"+pet.health);
+            System.out.println(Util.line);
+        }else if(this.salary<50){
+            System.out.println("can't afford it");
+            System.out.println(Util.line);
+        }else if(pet.health==100){
+            pet.isIll=false;
+            System.out.println(pet.name+"的生命值为:"+pet.health);
+            System.out.println(Util.line);
         }
-        System.out.println(pet.name+"的生命值为:"+pet.love);
-        System.out.println(Util.line);
     }
 
     public void work(){
@@ -169,6 +179,7 @@ public class Master {
 
     public void showStatus() {
         System.out.println(Util.line);
+        System.out.println("Name:"+this.name);
         System.out.println("Salary:"+this.salary);
         System.out.println("Sanity:"+this.sanity);
         System.out.println(Util.line);
