@@ -89,7 +89,7 @@ public class GameSystem {
                     pet.fallIll();
                 }
             }
-        },1000L*10L,(new Random().nextInt(10)+1)*120L*1000L);
+        },1000L*10L,(new Random().nextInt(10)+1)*60L*1000L);
     }
 
     private void startGame() {

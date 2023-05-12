@@ -8,7 +8,7 @@ public abstract class Pet{
     public int love;
     public boolean isIll;
     public String strain;
-    private Timer timer = new Timer();
+    private final Timer timer = new Timer();
     public Pet(){
         this.health=100;
         this.love=60;
