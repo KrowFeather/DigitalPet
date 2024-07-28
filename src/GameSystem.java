@@ -1,39 +1,83 @@
-import java.util.Random;
-import java.util.Scanner;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
+
 @SuppressWarnings("Duplicates")
 public class GameSystem {
     private final Master master = new Master();
+    private final Vector<Pet> petDeque = new Vector<>();
+    private Pet newPet;
     private Pet pet;
     public void initial(){
         Scanner sc = new Scanner(System.in);
+        boolean flag=false;
+        String str;
         System.out.println("-----------电子宠物-----------");
         System.out.println("What's your name?");
         master.name=sc.next();
-        System.out.println(Util.line);
-        System.out.println("Choose your pet:");
-        System.out.println("1. cat");
-        System.out.println("2. dog");
-        System.out.println("3. penguin");
-        System.out.println("4. fox");
-        System.out.println("5. rat");
-        System.out.println(Util.line);
-        int choice=sc.nextInt();
-        checkPetSelection(choice);
-        System.out.println(Util.line);
-        System.out.println("set your pet's name");
-        String name;
-        name=sc.next();
-        pet.name = name;
-        System.out.println(Util.line);
-        if(pet instanceof Cat || pet instanceof Dog) {
-            System.out.println("set your pet's strain");
-            pet.showExistStrains();
-            choice=sc.nextInt();
-            checkStrainSelection(choice);
-        }
+        do {
+            System.out.println(Util.line);
+            System.out.println("Choose your pet:");
+            System.out.println("1. cat");
+            System.out.println("2. dog");
+            System.out.println("3. penguin");
+            System.out.println("4. fox");
+            System.out.println("5. rat");
+            System.out.println(Util.line);
+            int choice = sc.nextInt();
+            checkPetSelection(choice);
+            System.out.println(Util.line);
+            System.out.println("set your pet's name");
+            String name;
+            name = sc.next();
+            newPet.name = name;
+            System.out.println(Util.line);
+            if (newPet instanceof Cat || newPet instanceof Dog) {
+                System.out.println("set your pet's strain");
+                newPet.showExistStrains();
+                choice = sc.nextInt();
+                checkStrainSelection(choice);
+            }
+            petDeque.add(newPet);
+            System.out.println("anymore?(Y/N)");
+            str = sc.next();
+            boolean flag1=false;
+            do {
+                if (str.equals("Y")) {
+
+                    flag1=true;
+                }else if(str.equals("N")){
+                    flag1=true;
+                    flag = true;
+                }else{
+                    System.out.println("invalid choice!");
+                    str=sc.next();
+                }
+            }while (!flag1);
+        }while(!flag);
+
         setTimer();
+        chooseCurrentPet();
+    }
+
+    private void chooseCurrentPet() {
+        System.out.println(Util.line);
+        System.out.println("choose your current pet:");
+        Scanner sc = new Scanner(System.in);
+        boolean flag=false;
+        int cnt=1;
+        for (var pet:petDeque) {
+            System.out.println(cnt+":"+pet.name+" "+pet.getClass());
+            cnt++;
+        }
+        int choice=sc.nextInt();
+        do{
+            if(choice-1<petDeque.size()){
+                pet=petDeque.get(choice-1);
+                flag=true;
+            }else{
+                System.out.println("invalid choice!");
+                choice=sc.nextInt();
+            }
+        }while (!flag);
         startGame();
     }
 
@@ -42,25 +86,27 @@ public class GameSystem {
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                if(pet.hungry!=0){
-                    pet.reduceHunger();
-                }else{
-                    pet.reduceHealth();
-                }
-                if(pet.hungry==10){
-                    System.out.println();
-                    System.out.println("Your pet is hungry! Please feed it!");
-                    System.out.println();
-                }
-                if(pet.health==10){
-                    System.out.println();
-                    System.out.println("Your pet's health is low! Take it to the hospital!");
-                    System.out.println();
-                }
-                if(pet.health==0){
-                    System.out.println();
-                    System.out.println("Your pet is dead! Game over!");
-                    System.exit(0);
+                for (var pet:petDeque) {
+                    if(pet.hungry!=0){
+                        pet.reduceHunger();
+                    }else{
+                        pet.reduceHealth();
+                    }
+                    if(pet.hungry==10){
+                        System.out.println();
+                        System.out.println("Your pet is hungry! Please feed it!");
+                        System.out.println();
+                    }
+                    if(pet.health==10){
+                        System.out.println();
+                        System.out.println("Your pet's health is low! Take it to the hospital!");
+                        System.out.println();
+                    }
+                    if(pet.health==0){
+                        System.out.println();
+                        System.out.println("Your pet is dead! Game over!");
+                        System.exit(0);
+                    }
                 }
             }
         };
@@ -68,13 +114,15 @@ public class GameSystem {
         TimerTask timerTask1  =new TimerTask() {
             @Override
             public void run() {
-                if(pet.love!=0){
-                    pet.reduceLove();
-                }
-                if(pet.love==10){
-                    System.out.println();
-                    System.out.println("Your pet is unhappy! Play with it!");
-                    System.out.println();
+                for (var pet:petDeque) {
+                    if(pet.love!=0){
+                        pet.reduceLove();
+                    }
+                    if(pet.love==10){
+                        System.out.println();
+                        System.out.println("Your pet is unhappy! Play with it!");
+                        System.out.println();
+                    }
                 }
             }
         };
@@ -85,11 +133,13 @@ public class GameSystem {
         timer2.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                if(!pet.isIll) {
+                Random random  = new Random();
+                int slicer = random.nextInt(petDeque.size());
+                if(!petDeque.get(slicer).isIll) {
                     pet.fallIll();
                 }
             }
-        },1000L*10L,(new Random().nextInt(10)+1)*60L*1000L);
+        },1000L*60L*2L,(new Random().nextInt(10)+1)*60L*1000L);
     }
 
     private void startGame() {
@@ -103,6 +153,7 @@ public class GameSystem {
             System.out.println("6. relax");
             System.out.println("7. status");
             System.out.println("8. master's status");
+            System.out.println("9. choose pet");
             System.out.println("0. exit");
             System.out.println(Util.line);
             Scanner sc = new Scanner(System.in);
@@ -176,6 +227,10 @@ public class GameSystem {
                     master.showStatus();
                     flag=true;
                     break;
+                case 9:
+                    chooseCurrentPet();
+                    flag=true;
+                    break;
                 default:
                     System.out.println("invalid choice!");
                     choice=sc.nextInt();
@@ -199,7 +254,7 @@ public class GameSystem {
         boolean flag= false;
         Scanner sc = new Scanner(System.in);
         do {
-            if (pet.setStrain(choice)) {
+            if (newPet.setStrain(choice)) {
                 flag=true;
             }else {
                 System.out.println("invalid choice");
@@ -214,23 +269,23 @@ public class GameSystem {
         do{
             switch (choice){
                 case 1:
-                    pet = new Cat();
+                    newPet = new Cat();
                     flag=true;
                     break;
                 case 2:
-                    pet = new Dog();
+                    newPet = new Dog();
                     flag=true;
                     break;
                 case 3:
-                    pet = new Penguin();
+                    newPet = new Penguin();
                     flag=true;
                     break;
                 case 4:
-                    pet = new Fox();
+                    newPet = new Fox();
                     flag=true;
                     break;
                 case 5:
-                    pet = new Rat();
+                    newPet = new Rat();
                     flag=true;
                     break;
                 default:
